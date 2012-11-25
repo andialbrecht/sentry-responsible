@@ -1,13 +1,17 @@
+from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.template.loader import render_to_string
 from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext_lazy as _
 
+from sentry.conf import settings
 from sentry.filters.base import Filter
 from sentry.models import TeamMember
 from sentry.plugins import Plugin
 
 from sentry_responsible import VERSION
+from sentry_responsible.forms import ResponsibleConfForm
 from sentry_responsible.models import Responsibility
 
 
@@ -37,8 +41,17 @@ class ResponsiblePlugin(Plugin):
     description = _('Assign responsibilities for events.')
     version = VERSION
 
+    conf_title = title
+    conf_key = slug
+    project_conf_form = ResponsibleConfForm
+
     author = 'Andi Albrecht'
     author_url = 'https://github.com/andialbrecht/sentry-responsible'
+
+    resource_links = [
+        (_('Bug Tracker'), 'https://github.com/andialbrecht/sentry-responsible/issues'),
+        (_('Source'), 'https://github.com/andialbrecht/sentry-responsible'),
+    ]
 
     def get_filters(self, project, **kwargs):
         return [ResponsibleFilter]
@@ -70,6 +83,9 @@ class ResponsiblePlugin(Plugin):
     def _update_responsibility(self, request, group):
         """Updates the responsibility for a group."""
         user = request.POST.get('user', None)
+        send_mail = self.get_option('send_mail', group.project)
+        if send_mail is None:
+            send_mail = True  # the default
         if user == 'full':
             Responsibility.objects.claim_full(group, request.user)
         else:
@@ -78,3 +94,20 @@ class ResponsiblePlugin(Plugin):
             except TeamMember.DoesNotExist:
                 return
             Responsibility.objects.add_user(group, user)
+            if send_mail and user != request.user:
+                self._send_mail(group, user)
+
+    def _send_mail(self, group, user):
+        subject_prefix = self.get_option('subject_prefix', group.project) or settings.EMAIL_SUBJECT_PREFIX
+        subject = unicode(_('Responsibility assigned'))
+        link = '%s/%s/group/%d/' % (settings.URL_PREFIX, group.project.slug, group.id)
+        body = render_to_string('sentry_responsible/emails/notification.txt', {
+            'link': link,
+            'user': user,
+        })
+        msg = EmailMultiAlternatives(
+            '%s%s' % (subject_prefix, subject),
+            body,
+            settings.SERVER_EMAIL,
+            [user.email])
+        msg.send()

@@ -1,0 +1,5 @@
+Hi {{ user.get_full_name|default:user.username }},
+
+you've been assigned as responsible for the following event:
+
+{{ link }}
