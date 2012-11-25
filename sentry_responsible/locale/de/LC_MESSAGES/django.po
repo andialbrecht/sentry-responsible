@@ -1,0 +1,50 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-11-25 20:40+0000\n"
+"PO-Revision-Date: 2012-11-25 21:40+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#: plugin.py:15 templates/sentry_responsible/widget.html:3
+msgid "Responsible"
+msgstr "Zuständig"
+
+#: plugin.py:19
+msgid "Unassigned"
+msgstr "Nicht zugewiesen"
+
+#: plugin.py:33
+msgid "Responsibilities"
+msgstr "Zuständigkeiten"
+
+#: plugin.py:35
+msgid "Assign responsibilities for events."
+msgstr "Zuständigkeiten zu Ereignissen zuweisen."
+
+#: templates/sentry_responsible/widget.html:7
+msgid "Remove"
+msgstr "Entfernen"
+
+#: templates/sentry_responsible/widget.html:10
+msgid "No one, yet."
+msgstr "Noch niemand."
+
+#: templates/sentry_responsible/widget.html:14
+msgid "Assign responsibility"
+msgstr "Zuständigkeit zuweisen"
+
+#: templates/sentry_responsible/widget.html:16
+msgid "Claim full responsibility"
+msgstr "Volle Zuständigkeit übernehmen"

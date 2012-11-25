@@ -1,0 +1,80 @@
+from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
+from django.utils.datastructures import SortedDict
+from django.utils.translation import ugettext_lazy as _
+
+from sentry.filters.base import Filter
+from sentry.models import TeamMember
+from sentry.plugins import Plugin
+
+from sentry_responsible import VERSION
+from sentry_responsible.models import Responsibility
+
+
+class ResponsibleFilter(Filter):
+    """Filter by responsibility."""
+    label = _('Responsible')
+    column = 'responsibility__user'
+
+    def get_choices(self):
+        choices = [('__unassigned__', u'[%s]' % _('Unassigned'))]
+        choices.extend([(u.pk, u.get_full_name() or u.username)
+                        for u in User.objects.exclude(responsibility=None)])
+        return SortedDict(choices)
+
+    def get_query_set(self, queryset):
+        """Handle special values and let default implementation do the rest."""
+        value = self.get_value()
+        if value == '__unassigned__':
+            return queryset.filter(responsibility__user=None)
+        else:
+            return super(ResponsibleFilter, self).get_query_set(queryset)
+
+
+class ResponsiblePlugin(Plugin):
+    title = _('Responsibilities')
+    slug = 'responsible'
+    description = _('Assign responsibilities for events.')
+    version = VERSION
+
+    author = 'Andi Albrecht'
+    author_url = 'https://github.com/andialbrecht/sentry-responsible'
+
+    def get_filters(self, project, **kwargs):
+        return [ResponsibleFilter]
+
+    def widget(self, request, group, **kwargs):
+        resp = Responsibility.objects.filter(group=group)
+        resp = resp.order_by('user__first_name', 'user__last_name',
+        'user__username')
+        resp = list(resp)
+
+        available = group.project.team.member_set.exclude(
+            user__in=[x.user for x in resp])
+
+        plugin_url = reverse('sentry-group-plugin-action',
+                             args=(group.project.slug, group.id, self.slug))
+        return self.render('sentry_responsible/widget.html', {
+            'responsible': resp,
+            'plugin_url': plugin_url,
+            'available': list(available),
+        })
+
+    def view(self, request, group, **kwargs):
+        if request.method == 'POST':
+            self._update_responsibility(request, group)
+        elif request.GET.get('remove', None):
+            Responsibility.objects.remove_id(request.GET.get('remove'))
+        return super(ResponsiblePlugin, self).view(request, group, **kwargs)
+
+    def _update_responsibility(self, request, group):
+        """Updates the responsibility for a group."""
+        user = request.POST.get('user', None)
+        if user == 'full':
+            Responsibility.objects.claim_full(group, request.user)
+        else:
+            try:
+                user = group.project.team.member_set.get(user=user).user
+            except TeamMember.DoesNotExist:
+                return
+            Responsibility.objects.add_user(group, user)

@@ -1,0 +1,30 @@
+{% load i18n %}
+<ul class="nav nav-list">
+  <li class="nav-header">{% trans "Responsible" %}</li>
+  {% for resp in responsible %}
+    <li class="clearfix">
+      {{ resp.user.get_full_name|default:resp.user.username }}
+      <a href="{{ plugin_url }}?remove={{ resp.id }}" title="{% trans 'Remove' %}" class="pull-right">x</a>
+    </li>
+  {% empty %}
+    <li>{% trans "No one, yet." %}</li>
+  {% endfor %}
+  {% if available %}
+    <form method="post" action="{{ plugin_url }}">
+      <select id="resp_assign_user" name="resp_assign_user" class="filter-list" rel="user" data-placeholder="{% trans 'Assign responsibility' %}">
+        <option></option>
+        <option value="full">[{% trans "Claim full responsibility" %}]</option>
+        {% for member in available %}
+        <option value="{{ member.user.id }}">{{ member.user.get_full_name|default:member.user.username }}</option>
+        {% endfor %}
+      </select>
+      {% csrf_token %}
+    </form>
+    <script>
+    $(document).ready(function() {$('#resp_assign_user').select2({width: '100%'}).on('change',
+      function(e) {
+        $.post('{{ plugin_url }}', {user: e.val}, function() { window.location.href = window.location.href });
+      })});
+    </script>
+  {% endif %}
+</ul>
