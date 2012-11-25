@@ -25,3 +25,13 @@ License
 -------
 
 sentry-responsible is licensed under the BSD license.
+
+
+Resources
+---------
+
+Bug tracker
+  https://github.com/andialbrecht/sentry-responsible/issues
+
+Source code
+  https://github.com/andialbrecht/sentry-responsible/
