@@ -3,6 +3,8 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.template.loader import render_to_string
 from django.utils.datastructures import SortedDict
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from sentry.conf import settings
@@ -79,6 +81,15 @@ class ResponsiblePlugin(Plugin):
         elif request.GET.get('remove', None):
             Responsibility.objects.remove_id(request.GET.get('remove'))
         return super(ResponsiblePlugin, self).view(request, group, **kwargs)
+
+    def tags(self, request, group, tag_list, **kwargs):
+        for resp in Responsibility.objects.filter(group=group):
+            url = '%s?responsibility__user=%s' % (
+                reverse('sentry', args=(group.project.slug,)), resp.user.id)
+            username = resp.user.get_full_name() or resp.user.username
+            tag_list.append(
+                mark_safe('<a href="%s">%s</a>' % (url, escape(username))))
+        return tag_list
 
     def _update_responsibility(self, request, group):
         """Updates the responsibility for a group."""
