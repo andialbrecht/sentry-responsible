@@ -52,7 +52,7 @@ class ResponsiblePlugin(Plugin):
 
     resource_links = [
         (_('Bug Tracker'), 'https://github.com/andialbrecht/sentry-responsible/issues'),
-        (_('Source'), 'https://github.com/andialbrecht/sentry-responsible'),
+        (_('Source Code'), 'https://github.com/andialbrecht/sentry-responsible'),
     ]
 
     def get_filters(self, project, **kwargs):

@@ -1,4 +1,5 @@
 * Assign user who closes an event as responsible (configurable).
 * Add docstrings.
+* Add documentation.
 * Add tests.
 * Use Plugin.get_notification_forms()?
