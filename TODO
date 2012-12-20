@@ -1,2 +1,4 @@
 * Assign user who closes an event as responsible (configurable).
-* Show assigned user as tags.
+* Add docstrings.
+* Add tests.
+* Use Plugin.get_notification_forms()?
