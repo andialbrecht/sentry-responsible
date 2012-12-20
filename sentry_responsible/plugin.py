@@ -83,6 +83,8 @@ class ResponsiblePlugin(Plugin):
         return super(ResponsiblePlugin, self).view(request, group, **kwargs)
 
     def tags(self, request, group, tag_list, **kwargs):
+        if not self.get_option('tag_assignee', group.project):
+            return tag_list
         for resp in Responsibility.objects.filter(group=group):
             url = '%s?responsibility__user=%s' % (
                 reverse('sentry', args=(group.project.slug,)), resp.user.id)
