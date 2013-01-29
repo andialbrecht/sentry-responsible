@@ -7,6 +7,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
+import sentry
 from sentry.conf import settings
 from sentry.filters.base import Filter
 from sentry.models import TeamMember
@@ -67,8 +68,14 @@ class ResponsiblePlugin(Plugin):
         available = group.project.team.member_set.exclude(
             user__in=[x.user for x in resp])
 
-        plugin_url = reverse('sentry-group-plugin-action',
-                             args=(group.project.slug, group.id, self.slug))
+        if tuple(map(int, sentry.get_version().split('.')[:2])) >= (5, 3):
+            # URL args changed in Sentry 5.3
+            args = (group.project.team.slug, group.project.slug,
+                    group.id, self.slug)
+        else:
+            args = (group.project.slug, group.id, self.slug)
+        plugin_url = reverse('sentry-group-plugin-action', args=args)
+
         return self.render('sentry_responsible/widget.html', {
             'responsible': resp,
             'plugin_url': plugin_url,
