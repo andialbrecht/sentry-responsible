@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 
 install_requires = [
-    'sentry>=5.0.14,<5.4',
+    'sentry>=5.0.14,<5.5',
 ]
 
 
@@ -14,7 +14,7 @@ with open('README.rst') as f:
 
 setup(
     name='sentry-responsible',
-    version='0.2.0',
+    version='0.2.1',
     author='Andi Albrecht',
     author_email='albrecht.andi@gmail.com',
     url='https://github.com/andialbrecht/sentry-responsible',
