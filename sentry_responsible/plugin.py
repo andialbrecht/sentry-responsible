@@ -52,8 +52,10 @@ class ResponsiblePlugin(Plugin):
     author_url = 'https://github.com/andialbrecht/sentry-responsible'
 
     resource_links = [
-        (_('Bug Tracker'), 'https://github.com/andialbrecht/sentry-responsible/issues'),
-        (_('Source Code'), 'https://github.com/andialbrecht/sentry-responsible'),
+        (_('Bug Tracker'),
+         'https://github.com/andialbrecht/sentry-responsible/issues'),
+        (_('Source Code'),
+         'https://github.com/andialbrecht/sentry-responsible'),
     ]
 
     def get_filters(self, project, **kwargs):
@@ -62,7 +64,7 @@ class ResponsiblePlugin(Plugin):
     def widget(self, request, group, **kwargs):
         resp = Responsibility.objects.filter(group=group)
         resp = resp.order_by('user__first_name', 'user__last_name',
-        'user__username')
+                             'user__username')
         resp = list(resp)
 
         available = group.project.team.member_set.exclude(
@@ -118,9 +120,11 @@ class ResponsiblePlugin(Plugin):
                 self._send_mail(group, user)
 
     def _send_mail(self, group, user):
-        subject_prefix = self.get_option('subject_prefix', group.project) or settings.EMAIL_SUBJECT_PREFIX
+        subject_prefix = (self.get_option('subject_prefix', group.project)
+                          or settings.EMAIL_SUBJECT_PREFIX)
         subject = unicode(_('Responsibility assigned'))
-        link = '%s/%s/group/%d/' % (settings.SENTRY_URL_PREFIX, group.project.slug, group.id)
+        link = ('%s/%s/group/%d/'
+                % (settings.SENTRY_URL_PREFIX, group.project.slug, group.id))
         body = render_to_string('sentry_responsible/emails/notification.txt', {
             'link': link,
             'user': user,
