@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -8,7 +9,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 import sentry
-from sentry.conf import settings
 from sentry.filters.base import Filter
 from sentry.models import TeamMember
 from sentry.plugins import Plugin
@@ -120,7 +120,7 @@ class ResponsiblePlugin(Plugin):
     def _send_mail(self, group, user):
         subject_prefix = self.get_option('subject_prefix', group.project) or settings.EMAIL_SUBJECT_PREFIX
         subject = unicode(_('Responsibility assigned'))
-        link = '%s/%s/group/%d/' % (settings.URL_PREFIX, group.project.slug, group.id)
+        link = '%s/%s/group/%d/' % (settings.SENTRY_URL_PREFIX, group.project.slug, group.id)
         body = render_to_string('sentry_responsible/emails/notification.txt', {
             'link': link,
             'user': user,
