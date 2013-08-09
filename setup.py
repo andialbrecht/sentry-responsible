@@ -18,7 +18,8 @@ setup(
     author='Andi Albrecht',
     author_email='albrecht.andi@gmail.com',
     url='https://github.com/andialbrecht/sentry-responsible',
-    description='A Sentry extension which allows you to assign responsibilities for sentry events.',
+    description=('A Sentry extension which allows you to assign '
+                 'responsibilities for sentry events.'),
     long_description=LONG_DESCRIPTION,
     license='BSD',
     packages=find_packages(),
@@ -26,7 +27,7 @@ setup(
     entry_points={
         'sentry.apps': [
             'sentry_responsible = sentry_responsible',
-            ],
+        ],
         'sentry.plugins': [
             'sentry_responsible = sentry_responsible.plugin:ResponsiblePlugin'
         ],
