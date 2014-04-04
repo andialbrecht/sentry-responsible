@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 
 from sentry.models import Group
@@ -44,6 +44,6 @@ class ResponsibilityManager(models.Manager):
 
 class Responsibility(models.Model):
     group = models.ForeignKey(Group)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
 
     objects = ResponsibilityManager()
