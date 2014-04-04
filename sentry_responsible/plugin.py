@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.template.loader import render_to_string
 from django.utils.datastructures import SortedDict
 from django.utils.html import escape
@@ -16,6 +16,8 @@ from sentry.plugins import Plugin
 from sentry_responsible import VERSION
 from sentry_responsible.forms import ResponsibleConfForm
 from sentry_responsible.models import Responsibility
+
+User = get_user_model()
 
 
 class ResponsibleFilter(Filter):
